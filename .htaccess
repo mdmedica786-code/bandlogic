@@ -1,0 +1,19 @@
+# BandLogic on Hostinger: serve the built React app from client/dist
+# and keep all source folders private.
+DirectoryIndex index.html
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Already inside the build folder: stop rewriting
+  RewriteRule ^client/dist/ - [L]
+
+  # Real file in the build folder (JS, CSS, images, html pages): serve it
+  RewriteCond %{DOCUMENT_ROOT}/client/dist/$1 -f
+  RewriteRule ^(.*)$ client/dist/$1 [L]
+
+  # Everything else (including source folders): the React app
+  RewriteRule ^ client/dist/index.html [L]
+</IfModule>
