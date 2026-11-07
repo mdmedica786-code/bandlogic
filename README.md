@@ -2,9 +2,21 @@
 
 > Decode your IELTS. Quantify your progress.
 
-AI-powered IELTS coaching across all four skills — Speaking, Writing, Reading, and Listening — with examiner-calibrated band scoring, per-criterion feedback, and an answer-key-backed marker for the objective skills.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+![Stack](https://img.shields.io/badge/stack-React%20%7C%20Node%20%7C%20FastAPI-informational)
+
+**Free, open-source, self-hostable AI coach for IELTS** (Speaking, Writing, Reading and Listening) with examiner-calibrated band scoring, per-criterion feedback, and an answer-key-backed marker for the objective skills.
 
 Formerly **Professor IELTS**.
+
+## Why BandLogic?
+
+Millions of people take IELTS every year, and good coaching is expensive. BandLogic gives learners instant, detailed, criterion-by-criterion feedback for free, and anyone can run it themselves.
+
+## Support the project
+
+If BandLogic helps you, **star the repo** and share it with other IELTS learners. Want to help build it? See [CONTRIBUTING.md](CONTRIBUTING.md) and look for `good first issue` labels.
 
 ## Architecture
 
