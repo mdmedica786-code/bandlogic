@@ -7,6 +7,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        // Static pages (blog, founder, privacy, tools) must load from the server, not the app shell
+        navigateFallbackDenylist: [/^\/blog(\/|$)/, /\.html$/],
+      },
       includeAssets: ['favicon.svg', 'bandlogic-logo.png'],
       manifest: {
         name: 'BandLogic — IELTS Coach',
