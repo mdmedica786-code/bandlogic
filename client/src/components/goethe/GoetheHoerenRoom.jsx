@@ -3,6 +3,8 @@ import { useApp } from '../../context/AppContext';
 import { getPraedikat } from '../../data/goethe/goetheGradingRules';
 import { Headphones, Send, RotateCcw, Loader2, AlertCircle, ChevronRight, FileSpreadsheet, CheckCheck, ScrollText } from 'lucide-react';
 import ExamModeToggle from './shared/ExamModeToggle';
+import FormatLoading from './shared/FormatLoading';
+import BackToOverview from './shared/BackToOverview';
 import ExamTimer from './shared/ExamTimer';
 import { useCountdown } from './shared/useCountdown';
 import ExamSetupBar from './shared/ExamSetupBar';
@@ -187,9 +189,7 @@ export function HoerenExam({ level, onLevelChange, mock = null }) {
   }
   if (!hoeren) {
     return (
-      <div className="flex items-center gap-2 text-slate-500 text-sm p-6">
-        <Loader2 className="w-4 h-4 animate-spin" /> Prüfungsformat wird geladen …
-      </div>
+      <FormatLoading />
     );
   }
 
@@ -209,6 +209,7 @@ export function HoerenExam({ level, onLevelChange, mock = null }) {
     <div className="flex flex-col gap-5">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-200 pb-4">
         <div>
+          {!mock && <BackToOverview />}
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-violet-50 text-violet-800 text-xs font-bold border border-violet-200">
             <Headphones className="w-3.5 h-3.5" /> Goethe-Zertifikat {level} · Hören
           </span>
@@ -242,6 +243,7 @@ export function HoerenExam({ level, onLevelChange, mock = null }) {
         <>
           {!mock && <ExamSetupBar level={level} onLevelChange={onLevelChange} topic={topic} onTopicChange={setTopic} />}
           <ExamInstructionScreen
+            modeLocked={Boolean(mock)}
             level={level}
             moduleName="Hören"
             timeMinutes={hoeren.timeMinutes}

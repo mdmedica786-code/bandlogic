@@ -449,8 +449,12 @@ async function mergeClipsWithPauses(clips) {
       return `[${i}:a]aresample=24000,aformat=sample_fmts=fltp:channel_layouts=mono${pad}[a${i}]`;
     });
     const concatInput = clips.map((_, i) => `[a${i}]`).join("");
-    // Mix with brown noise for ambient room feel and add a slight echo
-    const filter = `${chains.join(";")};${concatInput}concat=n=${clips.length}:v=0:a=1[concated];anoisesrc=c=brown:a=0.015[noise];[concated][noise]amix=inputs=2:duration=first:weights=1 0.5[mixed];[mixed]aecho=0.8:0.9:40:0.3[out]`;
+    // Real Goethe recordings are clean studio audio, so the default is no added
+    // noise. GOETHE_AUDIO_AMBIENCE=1 brings back a faint room tone (no echo).
+    const concat = `${chains.join(";")};${concatInput}concat=n=${clips.length}:v=0:a=1`;
+    const filter = process.env.GOETHE_AUDIO_AMBIENCE === "1"
+      ? `${concat}[concated];anoisesrc=c=brown:a=0.004[noise];[concated][noise]amix=inputs=2:duration=first:weights=1 0.3[out]`
+      : `${concat}[out]`;
     const args = [
       "-hide_banner", "-loglevel", "error",
       ...files.flatMap((f) => ["-i", f]),

@@ -5,8 +5,20 @@ import api from '../../../api/client';
 const cache = new Map();
 const pending = new Map();
 
-function loadFormat(level) {
-  if (cache.has(level)) return Promise.resolve(cache.get(level));
+// The last known format is also kept in localStorage, so a room opens at once
+// even while the server is waking up; the fresh copy replaces it in the background.
+const STORAGE_PREFIX = 'goethe:format:v1:';
+
+function readStored(level) {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + level);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function fetchFormat(level) {
   if (!pending.has(level)) {
     pending.set(
       level,
@@ -16,12 +28,34 @@ function loadFormat(level) {
           const data = res.data?.data;
           if (!data) throw new Error('Leeres Prüfungsformat');
           cache.set(level, data);
+          try {
+            localStorage.setItem(STORAGE_PREFIX + level, JSON.stringify(data));
+          } catch {
+            /* storage full or blocked — the in-memory cache is enough */
+          }
           return data;
         })
         .finally(() => pending.delete(level))
     );
   }
   return pending.get(level);
+}
+
+const refreshed = new Set();
+
+function loadFormat(level) {
+  if (cache.has(level)) return Promise.resolve(cache.get(level));
+  const stored = readStored(level);
+  if (stored) {
+    cache.set(level, stored);
+    // Refresh once per session; a failure keeps the stored copy.
+    if (!refreshed.has(level)) {
+      refreshed.add(level);
+      fetchFormat(level).catch(() => {});
+    }
+    return Promise.resolve(stored);
+  }
+  return fetchFormat(level);
 }
 
 /**

@@ -6,7 +6,8 @@ import {
   PenLine,
   Mic,
   BookOpen,
-  Sparkles,
+  MessageSquareText,
+  Check,
   Calendar,
   Calculator,
   ArrowRight,
@@ -40,245 +41,216 @@ export default function GoetheSectionPicker() {
     setSection(secId);
   };
 
-  const dynamicModules = [
+  const modules = [
     {
       id: 'lesen',
-      title: `Lesen (Leseverstehen) · ${currentLevel}`,
-      subtitle: `${spec.lesen.partsCount} Teile · ${spec.lesen.totalQuestions} Aufgaben`,
-      time: `${spec.lesen.timeMinutes} Minuten`,
-      points: `100 Punkte (Bestehen: ≥ 60 Pkt / ${spec.lesen.passRaw} Richtige)`,
+      name: 'Lesen',
+      what: 'Texte lesen und Aufgaben lösen',
+      meta: [`${spec.lesen.timeMinutes} Min.`, `${spec.lesen.partsCount} Teile`, `${spec.lesen.totalQuestions} Aufgaben`],
+      pass: `Bestanden ab ${spec.lesen.passRaw} richtigen Antworten`,
       icon: BookOpenText,
       accent: 'from-emerald-500 to-teal-700',
-      border: 'border-emerald-200 hover:border-emerald-400',
-      ring: 'hover:shadow-[0_24px_48px_-15px_rgba(16,185,129,0.3)]',
-      badge: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      border: 'hover:border-emerald-400 focus-visible:ring-emerald-400',
       partsDesc: spec.lesen.partsDesc,
     },
     {
       id: 'hoeren',
-      title: `Hören (Hörverstehen) · ${currentLevel}`,
-      subtitle: `${spec.hoeren.partsCount} Teile · ${spec.hoeren.totalQuestions} Aufgaben`,
-      time: `ca. ${spec.hoeren.timeMinutes} Minuten`,
-      points: `100 Punkte (Bestehen: ≥ 60 Pkt / ${spec.hoeren.passRaw} Richtige)`,
+      name: 'Hören',
+      what: 'Aufnahmen hören und Aufgaben lösen',
+      meta: [`ca. ${spec.hoeren.timeMinutes} Min.`, `${spec.hoeren.partsCount} Teile`, `${spec.hoeren.totalQuestions} Aufgaben`],
+      pass: `Bestanden ab ${spec.hoeren.passRaw} richtigen Antworten`,
       icon: Headphones,
       accent: 'from-amber-500 to-orange-700',
-      border: 'border-amber-200 hover:border-amber-400',
-      ring: 'hover:shadow-[0_24px_48px_-15px_rgba(245,158,11,0.3)]',
-      badge: 'bg-amber-50 text-amber-700 border-amber-200',
+      border: 'hover:border-amber-400 focus-visible:ring-amber-400',
       partsDesc: spec.hoeren.partsDesc,
     },
     {
       id: 'schreiben',
-      title: `Schreiben (Schriftlicher Ausdruck) · ${currentLevel}`,
-      subtitle: `${spec.schreiben.partsCount} Aufgaben · Freie Textproduktion`,
-      time: `${spec.schreiben.timeMinutes} Minuten`,
-      points: '100 Punkte (Bestehen: ≥ 60 Pkt)',
+      name: 'Schreiben',
+      what: 'Texte schreiben, die KI bewertet nach Goethe-Kriterien',
+      meta: [`${spec.schreiben.timeMinutes} Min.`, `${spec.schreiben.partsCount} Aufgaben`],
+      pass: 'Bestanden ab 60 von 100 Punkten',
       icon: PenLine,
       accent: 'from-sky-500 to-blue-700',
-      border: 'border-sky-200 hover:border-sky-400',
-      ring: 'hover:shadow-[0_24px_48px_-15px_rgba(14,165,233,0.3)]',
-      badge: 'bg-sky-50 text-sky-700 border-sky-200',
+      border: 'hover:border-sky-400 focus-visible:ring-sky-400',
       partsDesc: spec.schreiben.partsDesc,
     },
     {
       id: 'sprechen',
-      title: `Sprechen (Mündliche Prüfung) · ${currentLevel}`,
-      subtitle: `${spec.sprechen.partsCount} Teile · Interaktiv mit KI-Partner`,
-      time: `ca. ${spec.sprechen.timeMinutes} Minuten`,
-      points: '100 Punkte (Bestehen: ≥ 60 Pkt)',
+      name: 'Sprechen',
+      what: 'Mündliche Prüfung mit KI-Prüferin und KI-Partner',
+      meta: [`ca. ${spec.sprechen.timeMinutes} Min.`, `${spec.sprechen.partsCount} Teile`, 'Mikrofon nötig'],
+      pass: 'Bestanden ab 60 von 100 Punkten',
       icon: Mic,
       accent: 'from-rose-500 to-red-700',
-      border: 'border-rose-200 hover:border-rose-400',
-      ring: 'hover:shadow-[0_24px_48px_-15px_rgba(244,63,94,0.3)]',
-      badge: 'bg-rose-50 text-rose-700 border-rose-200',
+      border: 'hover:border-rose-400 focus-visible:ring-rose-400',
       partsDesc: spec.sprechen.partsDesc,
     },
   ];
 
-  return (
-    <div className="min-h-full flex flex-col items-center px-4 py-8 max-w-6xl mx-auto animate-fade-in text-left">
-      {/* Hero Header with German Banner & Level Selector */}
-      <div className="w-full text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 text-amber-900 text-xs font-semibold mb-3 shadow-xs">
-          <span className="text-base">🇩🇪</span>
-          <span>Goethe-Zertifikat {currentLevel} · {spec.label}</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-        </div>
+  const tabs = [
+    { key: 'pruefung', label: 'Üben' },
+    { key: 'leitfaden', label: 'Prüfungsformat' },
+    { key: 'rechner', label: 'Notenrechner', Icon: Calculator },
+  ];
 
-        <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
-          Deutscher {currentLevel} Prüfungstrainer
+  const resources = [
+    { id: 'themen', title: 'Wortschatz nach Themen', desc: '15 Themen mit wichtigen Wörtern', Icon: BookOpen, tint: 'bg-purple-50 text-purple-700' },
+    { id: 'redemittel', title: 'Redemittel', desc: 'Fertige Sätze für Sprechen und Schreiben', Icon: MessageSquareText, tint: 'bg-emerald-50 text-emerald-700' },
+    { id: 'plan', title: 'Lernplan', desc: 'Schritt für Schritt zur Prüfung', Icon: Calendar, tint: 'bg-rose-50 text-rose-700' },
+  ];
+
+  return (
+    <div className="min-h-full flex flex-col items-center px-4 py-6 md:py-8 max-w-5xl mx-auto animate-fade-in text-left">
+      {/* Header: title, one-line promise, level choice */}
+      <div className="w-full text-center mb-6">
+        <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+          <span className="mr-2" aria-hidden="true">🇩🇪</span>
+          Goethe-Zertifikat {currentLevel}
         </h1>
-        <p className="text-sm md:text-base text-slate-600 max-w-2xl mx-auto">
-          Dynamische Prüfungssimulation für jedes GER-Niveau (A2–C1), KI-Prüfungspartner mit Spracheingabe &amp; Sprachausgabe, sowie authentische Themenauswahl.
+        <p className="text-sm md:text-base text-slate-600 max-w-xl mx-auto mt-2">
+          Üben Sie alle vier Prüfungsteile im echten Prüfungsformat – mit neuen Aufgaben bei jedem Start.
         </p>
 
-        {/* Level Switcher Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Niveau wählen:</span>
-          {['A2', 'B1', 'B2', 'C1'].map((lvl) => {
-            const isActive = currentLevel === lvl;
-            return (
-              <button
-                key={lvl}
-                onClick={() => setGoetheLevel(lvl)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-xs ${
-                  isActive
-                    ? 'bg-slate-900 text-white ring-2 ring-amber-400 scale-105'
-                    : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-                }`}
-              >
-                {lvl} ({GOETHE_LEVEL_SPECS[lvl]?.subLabel || lvl})
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Tab switchers */}
-        <div className="flex justify-center mt-6 gap-2">
-          <button
-            onClick={() => setActiveTab('pruefung')}
-            className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all ${
-              activeTab === 'pruefung'
-                ? 'bg-slate-900 text-white shadow-md'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            Vier Prüfungsmodule
-          </button>
-          <button
-            onClick={() => setActiveTab('leitfaden')}
-            className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all ${
-              activeTab === 'leitfaden'
-                ? 'bg-slate-900 text-white shadow-md'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            Prüfungsordnung &amp; Format
-          </button>
-          <button
-            onClick={() => setActiveTab('rechner')}
-            className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'rechner'
-                ? 'bg-slate-900 text-white shadow-md'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
-          >
-            <Calculator className="w-3.5 h-3.5" />
-            Notenrechner (Prädikat)
-          </button>
-        </div>
-      </div>
-
-      {/* TAB 1: 4 Modules Grid */}
-      {activeTab === 'pruefung' && (
-        <div className="w-full flex flex-col gap-6">
-          <button
-            type="button"
-            onClick={() => pickSection('mock')}
-            className="w-full text-left rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 shadow-lg hover:shadow-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
-          >
-            <span>
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-300">Neu · Unter Prüfungsbedingungen</span>
-              <span className="block text-xl md:text-2xl font-extrabold mt-1">Vollständige Modellprüfung {currentLevel}</span>
-              <span className="block text-sm text-slate-300 mt-1">
-                Lesen → Hören → Pause → Schreiben → Sprechen, mit Ergebnisbericht über alle vier Module (0–400 Punkte).
-              </span>
-            </span>
-            <span className="inline-flex items-center gap-2 self-start md:self-center px-5 py-2.5 rounded-xl bg-emerald-500 text-slate-900 text-sm font-extrabold">
-              <ShieldCheck className="w-4 h-4" /> Starten
-            </span>
-          </button>
-          <div className="grid gap-6 md:grid-cols-2">
-            {dynamicModules.map((m) => {
-              const Icon = m.icon;
+        {/* Step 1: level */}
+        <div className="mt-5">
+          <p id="goethe-level-label" className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+            1. Ihr Niveau
+          </p>
+          <div role="radiogroup" aria-labelledby="goethe-level-label" className="inline-grid grid-cols-4 gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200">
+            {['A2', 'B1', 'B2', 'C1'].map((lvl) => {
+              const isActive = currentLevel === lvl;
               return (
-                <div
-                  key={m.id}
-                  onClick={() => pickSection(m.id)}
-                  className={`group relative flex flex-col justify-between p-6 rounded-3xl bg-white border ${m.border} shadow-sm transition-all duration-300 hover:-translate-y-1 ${m.ring} cursor-pointer`}
+                <button
+                  key={lvl}
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  title={GOETHE_LEVEL_SPECS[lvl]?.subLabel || lvl}
+                  onClick={() => setGoetheLevel(lvl)}
+                  className={`min-w-[64px] px-4 py-2 rounded-xl text-sm font-extrabold transition-all ${
+                    isActive ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:bg-white hover:text-slate-900'
+                  }`}
                 >
-                  <div>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-2xl bg-gradient-to-br ${m.accent} text-white shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${m.badge}`}>
-                        {m.points}
-                      </span>
-                    </div>
-
-                    <h2 className="text-lg md:text-xl font-bold text-slate-900 mb-1">
-                      {m.title}
-                    </h2>
-                    <p className="text-xs font-semibold text-slate-500 mb-3 flex items-center gap-2">
-                      <span>{m.subtitle}</span>
-                      <span>·</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-slate-400" />
-                        {m.time}
-                      </span>
-                    </p>
-
-                    <p className="text-xs text-slate-600 leading-relaxed mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      {m.partsDesc}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
-                    <span className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                      Dynamisch generieren oder Standardtest
-                    </span>
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold group-hover:bg-brand-600 transition-colors">
-                      <span>Starten</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
-                </div>
+                  {lvl}
+                </button>
               );
             })}
           </div>
+          <p className="text-xs text-slate-500 mt-2">{spec.subLabel} · {spec.targetAudience}</p>
+        </div>
 
-          {/* Additional Goethe Resources Banner */}
-          <div className="grid gap-3 sm:grid-cols-3 pt-4 border-t border-slate-200">
+        {/* Tabs */}
+        <div role="tablist" className="flex justify-center mt-5 gap-1 border-b border-slate-200">
+          {tabs.map(({ key, label, Icon }) => (
             <button
-              onClick={() => pickSection('themen')}
-              className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 text-left transition-all hover:shadow-xs flex items-center gap-3"
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === key}
+              onClick={() => setActiveTab(key)}
+              className={`px-4 py-2.5 -mb-px text-sm font-bold flex items-center gap-1.5 border-b-2 transition-colors ${
+                activeTab === key ? 'border-slate-900 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-800'
+              }`}
             >
-              <div className="p-2.5 rounded-xl bg-purple-50 text-purple-700">
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-slate-900">Themenkatalog C1–C15</h4>
-                <p className="text-[11px] text-slate-500">15 thematische Wortschatzmodule</p>
-              </div>
+              {Icon && <Icon className="w-3.5 h-3.5" />}
+              {label}
             </button>
+          ))}
+        </div>
+      </div>
 
-            <button
-              onClick={() => pickSection('redemittel')}
-              className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 text-left transition-all hover:shadow-xs flex items-center gap-3"
-            >
-              <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-slate-900">Redemittel &amp; Grammatik</h4>
-                <p className="text-[11px] text-slate-500">Prüfungsformulierungen für Dialoge</p>
-              </div>
-            </button>
+      {/* TAB 1: practice */}
+      {activeTab === 'pruefung' && (
+        <div className="w-full flex flex-col gap-6">
+          <div>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">2. Ein Modul üben</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {modules.map((m) => {
+                const Icon = m.icon;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => pickSection(m.id)}
+                    className={`group flex flex-col text-left p-5 rounded-3xl bg-white border border-slate-200 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 ${m.border}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`flex-shrink-0 p-3 rounded-2xl bg-gradient-to-br ${m.accent} text-white shadow-md`}>
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h2 className="text-lg font-extrabold text-slate-900 leading-tight">{m.name}</h2>
+                        <p className="text-xs text-slate-600 mt-0.5">{m.what}</p>
+                      </div>
+                      <ArrowRight className="flex-shrink-0 w-5 h-5 text-slate-300 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all" />
+                    </div>
 
+                    <div className="flex flex-wrap gap-1.5 mt-4">
+                      {m.meta.map((chip, i) => (
+                        <span key={chip} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold">
+                          {i === 0 && <Clock className="w-3 h-3 text-slate-400" />}
+                          {chip}
+                        </span>
+                      ))}
+                    </div>
+
+                    <ul className="mt-3 space-y-1">
+                      {m.partsDesc.split(' · ').map((line) => (
+                        <li key={line} className="text-xs text-slate-600 leading-snug">{line}</li>
+                      ))}
+                    </ul>
+
+                    <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 mt-4 pt-3 border-t border-slate-100 w-full">
+                      <Check className="w-3.5 h-3.5 text-emerald-600" /> {m.pass}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Full mock exam */}
+          <div>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Oder: die ganze Prüfung am Stück</p>
             <button
-              onClick={() => pickSection('plan')}
-              className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 text-left transition-all hover:shadow-xs flex items-center gap-3"
+              type="button"
+              onClick={() => pickSection('mock')}
+              className="group w-full text-left rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 md:p-6 shadow-lg hover:shadow-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
             >
-              <div className="p-2.5 rounded-xl bg-rose-50 text-rose-700">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-slate-900">Trainingsplan</h4>
-                <p className="text-[11px] text-slate-500">Gezielte Vorbereitung auf die Prüfung</p>
-              </div>
+              <span>
+                <span className="block text-lg md:text-xl font-extrabold">Modellprüfung {currentLevel}</span>
+                <span className="block text-sm text-slate-300 mt-1">
+                  Lesen, Hören, Schreiben und Sprechen unter Prüfungsbedingungen – am Ende ein Ergebnisbericht für alle vier Module.
+                </span>
+              </span>
+              <span className="inline-flex items-center gap-2 self-start md:self-center whitespace-nowrap px-5 py-2.5 rounded-xl bg-emerald-500 group-hover:bg-emerald-400 text-slate-900 text-sm font-extrabold transition-colors">
+                <ShieldCheck className="w-4 h-4" /> Modellprüfung starten
+              </span>
             </button>
+          </div>
+
+          {/* Learning resources */}
+          <div>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Lernhilfen</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {resources.map(({ id, title, desc, Icon, tint }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => pickSection(id)}
+                  className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-slate-400 text-left transition-all hover:shadow-sm flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                >
+                  <span className={`p-2.5 rounded-xl ${tint}`}>
+                    <Icon className="w-5 h-5" />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-bold text-slate-900">{title}</span>
+                    <span className="block text-xs text-slate-500">{desc}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

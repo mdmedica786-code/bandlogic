@@ -18,9 +18,9 @@ export default function ExamSetupBar({ level, onLevelChange, topic, onTopicChang
   const [custom, setCustom] = useState(isPreset ? '' : topic);
 
   return (
-    <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-card grid gap-3 sm:grid-cols-3 text-sm">
+    <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-card grid gap-3 sm:grid-cols-2 lg:grid-cols-3 text-sm">
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-bold text-slate-600">Niveaustufe</span>
+        <span className="text-xs font-bold text-slate-600">Niveau</span>
         <select
           value={level}
           disabled={disabled}
@@ -45,29 +45,32 @@ export default function ExamSetupBar({ level, onLevelChange, topic, onTopicChang
           }}
           className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-semibold text-slate-800"
         >
-          <option value="">Zufällig (wie in der Prüfung)</option>
+          <option value="">Zufällig – wie in der Prüfung (empfohlen)</option>
           {topics.map((t) => (
             <option key={t.id} value={t.title}>
               {t.title}
             </option>
           ))}
-          <option value="__custom">Eigenes Thema …</option>
+          <option value="__custom">Eigenes Thema eingeben …</option>
         </select>
       </label>
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-bold text-slate-600">Eigenes Wunschthema</span>
-        <input
-          type="text"
-          value={custom}
-          disabled={disabled}
-          placeholder="z. B. Künstliche Intelligenz im Alltag"
-          onChange={(e) => {
-            setCustom(e.target.value);
-            onTopicChange(e.target.value);
-          }}
-          className="p-2.5 rounded-xl border border-slate-200 text-slate-800"
-        />
-      </label>
+      {!isPreset && (
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-bold text-slate-600">Ihr Thema</span>
+          <input
+            autoFocus
+            type="text"
+            value={custom}
+            disabled={disabled}
+            placeholder="z. B. Künstliche Intelligenz im Alltag"
+            onChange={(e) => {
+              setCustom(e.target.value);
+              onTopicChange(e.target.value || ' ');
+            }}
+            className="p-2.5 rounded-xl border border-slate-200 text-slate-800"
+          />
+        </label>
+      )}
     </div>
   );
 }

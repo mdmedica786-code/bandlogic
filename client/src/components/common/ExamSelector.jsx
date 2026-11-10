@@ -53,7 +53,7 @@ export default function ExamSelector({ className = '' }) {
               ? 'bg-gradient-to-r from-amber-500 to-red-600 text-white shadow-sm scale-[1.02]'
               : 'text-slate-600 hover:text-slate-900'
           }`}
-          title="Goethe-Zertifikat Deutsch Prüfungstraining (A1–C1)"
+          title="Goethe-Zertifikat Deutsch Prüfungstraining (A2–C1)"
         >
           <span className="text-sm">🇩🇪</span>
           <span>Goethe {examType === 'goethe' ? goetheLevel : ''}</span>

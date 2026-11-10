@@ -1,5 +1,10 @@
-import { Clock, ListChecks, PlayCircle, Loader2, ShieldCheck } from 'lucide-react';
-import ExamModeToggle from './ExamModeToggle';
+import { Clock, ListChecks, PlayCircle, Loader2, ShieldCheck, GraduationCap, Lightbulb } from 'lucide-react';
+import { useExamMode } from './useExamMode';
+
+const MODES = [
+  { key: 'lern', label: 'Lernmodus', hint: 'Mit Hilfen: Übersetzungen, Pause und sofortige Kontrolle. Gut zum Einstieg.', Icon: Lightbulb },
+  { key: 'pruefung', label: 'Prüfungsmodus', hint: 'Wie in der echten Prüfung: offizielle Zeit, keine Hilfen, Ergebnis am Ende.', Icon: GraduationCap },
+];
 
 /**
  * Start screen of a module: name, time, structure and rules, then
@@ -14,8 +19,10 @@ export default function ExamInstructionScreen({
   onStart,
   starting = false,
   startLabel = 'Prüfung starten',
+  modeLocked = false,
   children,
 }) {
+  const { mode, setMode } = useExamMode();
   return (
     <div className="rounded-3xl border border-slate-200 bg-white shadow-card overflow-hidden">
       <div className="bg-slate-900 text-white px-6 py-5 flex flex-wrap items-center justify-between gap-3">
@@ -54,21 +61,50 @@ export default function ExamInstructionScreen({
               <li key={r}>{r}</li>
             ))}
           </ul>
-          <div className="mt-5">
-            <p className="text-xs font-bold text-slate-500 mb-2">Modus</p>
-            <ExamModeToggle />
-          </div>
+        </div>
+      </div>
+
+      {/* Mode choice with the difference spelled out (no hidden tooltips). */}
+      <div className={modeLocked ? 'hidden' : 'px-6 pb-6'}>
+        <p className="text-sm font-extrabold text-slate-900 mb-3">Wie möchten Sie üben?</p>
+        <div role="radiogroup" aria-label="Modus wählen" className="grid gap-3 sm:grid-cols-2">
+          {MODES.map(({ key, label, hint, Icon }) => {
+            const active = mode === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => setMode(key)}
+                className={`flex items-start gap-3 p-4 rounded-2xl border-2 text-left transition-all ${
+                  active ? 'border-emerald-500 bg-emerald-50/60 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'
+                }`}
+              >
+                <span className={`flex-shrink-0 p-2 rounded-xl ${active ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                  <Icon className="w-4 h-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-extrabold text-slate-900">{label}</span>
+                  <span className="block text-xs text-slate-600 mt-0.5 leading-relaxed">{hint}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {children}
 
-      <div className="px-6 py-4 border-t border-slate-100 flex justify-end">
+      <div className="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <p className="text-xs text-slate-500">
+          {starting ? 'Die Aufgaben werden neu erstellt – das dauert einen Moment.' : 'Bei jedem Start erhalten Sie neue Aufgaben.'}
+        </p>
         <button
           type="button"
           onClick={onStart}
           disabled={starting}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-extrabold shadow-md disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-extrabold shadow-md disabled:opacity-60"
         >
           {starting ? <Loader2 className="w-5 h-5 animate-spin" /> : <PlayCircle className="w-5 h-5" />}
           {startLabel}

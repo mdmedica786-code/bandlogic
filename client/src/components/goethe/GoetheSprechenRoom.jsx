@@ -4,6 +4,8 @@ import api from '../../api/client';
 import { getPraedikat } from '../../data/goethe/goetheGradingRules';
 import { Mic, Square, Loader2, AlertCircle, Users, UserRound, GraduationCap, RotateCcw, Send, Sparkles, Keyboard, Flag, Award } from 'lucide-react';
 import ExamModeToggle from './shared/ExamModeToggle';
+import FormatLoading from './shared/FormatLoading';
+import BackToOverview from './shared/BackToOverview';
 import ExamTimer from './shared/ExamTimer';
 import { useCountdown, formatClock } from './shared/useCountdown';
 import ExamSetupBar from './shared/ExamSetupBar';
@@ -375,15 +377,14 @@ export function SprechenExam({ level, onLevelChange, mock = null }) {
   }
   if (!sprechen) {
     return (
-      <div className="flex items-center gap-2 text-slate-500 text-sm p-6">
-        <Loader2 className="w-4 h-4 animate-spin" /> Prüfungsformat wird geladen …
-      </div>
+      <FormatLoading />
     );
   }
 
   const header = (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-200 pb-4">
       <div>
+        {!mock && <BackToOverview />}
         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-rose-50 text-rose-800 text-xs font-bold border border-rose-200">
           <Users className="w-3.5 h-3.5" /> Goethe-Zertifikat {level} · Sprechen (Paarprüfung)
         </span>
