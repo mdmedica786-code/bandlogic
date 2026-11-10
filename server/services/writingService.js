@@ -78,7 +78,7 @@ STUDENT'S RESPONSE:
 ${essay}
 """
 
-Assess this response now against the four IELTS Writing criteria. Return ONLY valid JSON matching the contract.`;
+Assess this response now against the four IELTS Writing criteria. Remember: "mistakes" must list EVERY error, checked sentence by sentence, in order of occurrence. Return ONLY valid JSON matching the contract.`;
 
   const contentArray = [
     { type: "text", text: userMessage }

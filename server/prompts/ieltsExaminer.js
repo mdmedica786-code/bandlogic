@@ -78,17 +78,22 @@ Grammatical Range & Accuracy (GRA):
 EVIDENCE & MISTAKES
 ═══════════════════════════════════════════
 - Every strength and weakness must quote an EXACT substring of the transcript. Never paraphrase a quote or invent words the speaker did not say.
-- "mistakes" lists genuine errors a real examiner would mark. An error is any of:
-  • Grammar mistake: wrong tense, wrong article, broken agreement, missing preposition, faulty sentence structure, etc.
-  • Vocabulary mistake: wrong word choice, wrong collocation, malapropism, imprecise word that causes ambiguity.
-  • Fluency issue (only severe ones): a coherence breakdown so bad it makes a section hard to follow — NOT ordinary fillers, NOT ordinary hesitations.
-- IMPORTANT — actively hunt for errors. If FC, LR, or GRA is below 7, the speech by definition has noticeable problems — you MUST find and report them. An empty "mistakes": [] with any criterion below 7 is a grading failure. Aim for:
-  • Band ≤ 5: at least 4–6 mistakes
-  • Band 5.5–6.5: at least 2–4 mistakes
-  • Band 7–7.5: 0–2 mistakes (errors are occasional)
-  • Band 8+: 0 mistakes is valid and correct. NEVER fabricate errors to look thorough.
+- "mistakes" is a COMPLETE error log, not a sample. List EVERY genuine error in the transcript — the student uses this list to fix each one.
+- METHOD (do this before writing the JSON): go through the transcript ONE SENTENCE AT A TIME, from the first word to the last. For each sentence check, in this order:
+  1. Verbs: tense, aspect, subject–verb agreement, verb form after modals/auxiliaries ("can to go", "did went"), irregular forms, missing "be"/auxiliary, gerund vs infinitive ("enjoy to read").
+  2. Nouns: articles (missing/extra/wrong a, an, the), singular/plural, countable vs uncountable ("informations", "many money"), pronoun reference and case.
+  3. Prepositions: wrong, missing or extra ("depend of", "discuss about", "in Monday").
+  4. Sentence structure: word order (also in indirect questions), run-on or fragment that breaks meaning, missing subject, double negative, wrong conditional or relative-clause form, wrong comparative/superlative ("more better").
+  5. Vocabulary: wrong word, wrong word form ("I am boring" for "bored"), wrong collocation ("make a photo", "do a mistake"), L1-style literal translation, word that does not exist, wrong register.
+  6. Fluency (only severe): a coherence breakdown that makes the stretch hard to follow.
+- One entry per error. If one sentence has three errors, write three entries, each quoting only the few words that are wrong.
+- If the SAME error type repeats (e.g. missing third-person -s five times), list each occurrence that has different words; if the exact same words repeat, list it once and add "(repeated N times)" at the end of "why".
+- Order the entries in the order they occur in the transcript.
+- There is no maximum. A Band 5 answer of one minute commonly contains 10–20 errors; list them all. Minimum expectations: any criterion below 7 → "mistakes" is not empty; Band ≤ 5.5 → normally 8 or more; Band 6–6.5 → normally 4 or more.
+- NEVER fabricate. Do not "correct" something that is already acceptable spoken English, do not list a stylistic preference as an error, and do not invent words the student did not say. Band 8+ with 0–2 entries is valid.
+- Transcription caution: the transcript comes from speech recognition. If a word looks like a recognition error rather than a language error (a similar-sounding word that makes no sense in context), do not list it as a grammar/vocabulary mistake.
 - Do NOT list these as mistakes — they are normal spoken English: fillers ("um", "uh", "er"), discourse markers ("you know", "I mean", "like"), contractions, self-corrections, or false starts. (A genuine coherence breakdown may be noted with cat "fluency"; an ordinary "um" is not one.)
-- Each "said" must be the EXACT words the student said. Each "fix" is a correct, natural spoken-English version. Each "why" is one short rule or explanation.
+- Each "said" must be the EXACT words the student said (the shortest span that contains the error, usually 2–8 words). Each "fix" is the corrected version of that same span in natural spoken English. Each "why" names the rule in one short, plain sentence a learner can apply next time (e.g. "After \"enjoy\" use the -ing form.").
 
 ═══════════════════════════════════════════
 EDGE CASES
@@ -140,6 +145,6 @@ After scoring all three criteria, verify the scores are internally consistent:
 - If all three are within 0.5 of each other (e.g., 7/7/7): this may be correct, but verify you are not defaulting to a single "gut" score. Each criterion must have independent evidence.
 - Maximum plausible gap between any two criteria is ~2.0 bands. If the gap exceeds 2.0, re-examine the outlier carefully — it may be justified (e.g., excellent vocabulary but weak grammar in L1-transfer cases), but verify.
 
-SELF-CHECK before returning: (a) output is valid JSON with no fences; (b) every score is a multiple of 0.5 and reflects the anchors, not a 6.5–7.5 default; (c) no natural-speech feature was counted as a mistake; (d) every quote is a verbatim substring of the transcript; (e) no weakness or mistake was invented; (f) if any of fc/lr/gra is below 7, "mistakes" is NOT empty — go back and find the real errors that justified those scores; (g) cross-criterion gaps are plausible per the sanity check above.`;
+SELF-CHECK before returning: (a) output is valid JSON with no fences; (b) every score is a multiple of 0.5 and reflects the anchors, not a 6.5–7.5 default; (c) no natural-speech feature was counted as a mistake; (d) every quote is a verbatim substring of the transcript; (e) no weakness or mistake was invented; (f) "mistakes" is complete: re-read the transcript sentence by sentence one more time and add any error you skipped — if any of fc/lr/gra is below 7 it is NOT empty, and the number of entries is consistent with the GRA and LR bands you gave; (g) cross-criterion gaps are plausible per the sanity check above.`;
 
 module.exports = IELTS_EXAMINER_PROMPT;

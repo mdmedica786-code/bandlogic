@@ -354,7 +354,7 @@ async function evaluateTranscript(transcript, questionText, questionPart, model 
 Student's Transcript:
 "${transcript}"${evidenceBlock}
 
-Evaluate this response now. Return ONLY valid JSON.`;
+Evaluate this response now. Remember: "mistakes" must list EVERY error, checked sentence by sentence, in order of occurrence. Return ONLY valid JSON.`;
 
   const response = await openai.chat.completions.create({
     model,

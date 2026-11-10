@@ -89,12 +89,21 @@ EVIDENCE & MISTAKES
   • vocabulary: wrong word, wrong collocation, wrong form, spelling, register/tone mismatch.
   • cohesion: faulty/over-used linker, unclear referencing, paragraph that does not progress.
   • task: missing bullet/part, no overview (T1), unclear/contradictory position (T2), irrelevant or unsupported content.
-- Actively hunt for errors. If any criterion is below 7 there ARE noticeable problems — find and report them. An empty "mistakes": [] with any criterion below 7 is a grading failure. Aim for:
-  • Band ≤ 5: at least 5–8 mistakes
-  • Band 5.5–6.5: at least 3–5 mistakes
-  • Band 7–7.5: 1–3 mistakes
-  • Band 8+: 0–2 mistakes; NEVER fabricate errors to look thorough.
-- Each "said" is the EXACT student text; "fix" is a correct, natural rewrite of that span; "why" is one short rule.
+- "mistakes" is a COMPLETE error log, not a sample. List EVERY genuine error in the response — the student uses this list to correct the whole text.
+- METHOD (do this before writing the JSON): go through the text ONE SENTENCE AT A TIME, from the first to the last. For each sentence check, in this order:
+  1. Verbs: tense, aspect, subject–verb agreement, verb form, passive form, gerund vs infinitive, conditionals.
+  2. Nouns: articles (missing/extra/wrong), singular/plural, countable vs uncountable, pronoun reference.
+  3. Prepositions and dependent prepositions ("increase of 10%" vs "increase in sales").
+  4. Sentence structure: word order, fragments, run-ons and comma splices, faulty parallel structure, relative clauses, comparatives.
+  5. Punctuation and capitalisation that a marker would notice (missing comma after a fronted clause, apostrophes, capital letters).
+  6. Vocabulary: wrong word, wrong word form, wrong collocation, spelling (every misspelt word), informal or spoken register in an academic/formal task, repetition where a clear alternative exists.
+  7. Cohesion: wrong, missing or mechanical linker, unclear "this/it/they" reference.
+  Then check the whole response once for "task" problems: missing bullet/part, no overview (T1), unclear or shifting position (T2), unsupported or irrelevant ideas, under length.
+- One entry per error. If one sentence has three errors, write three entries, each quoting only the few words that are wrong. If the exact same error repeats with the same words, list it once and add "(repeated N times)" to "why"; otherwise list each occurrence.
+- Order the entries in the order they occur in the text; put "task" entries last.
+- There is no maximum. A Band 5–5.5 essay of 250 words commonly contains 20–30 errors; list them all. Minimum expectations: any criterion below 7 → not empty; Band ≤ 5.5 → normally 12 or more; Band 6–6.5 → normally 6 or more; Band 7–7.5 → every slip you can find.
+- NEVER fabricate. Do not list an acceptable sentence as an error or a stylistic preference as a mistake. Band 8+ with 0–2 entries is valid.
+- Each "said" is the EXACT student text (the shortest span that contains the error, usually 2–8 words); "fix" is the corrected version of that same span; "why" names the rule in one short, plain sentence a learner can apply next time.
 
 ═══════════════════════════════════════════
 MODEL / IMPROVED VERSION
@@ -146,6 +155,6 @@ After scoring all four criteria, verify internal consistency:
 - If all four are within 0.5 of each other: this may be correct, but verify you are not defaulting to a single "gut" score. Each criterion must have independent evidence.
 - Maximum plausible gap between any two criteria is ~2.5 bands. If the gap exceeds 2.5, re-examine the outlier carefully.
 
-SELF-CHECK before returning: (a) valid JSON, no fences; (b) every band is a multiple of 0.5 and reflects the anchors, not a 6.5–7.5 default; (c) every quote is a verbatim substring of the student's text; (d) no weakness or mistake was invented; (e) the word-count shortfall, if any, is reflected in TR; (f) if any of tr/cc/lr/gra is below 7, "mistakes" is NOT empty; (g) "improvedVersion" fully satisfies the task and word minimum; (h) cross-criterion gaps are plausible per the sanity check above.`;
+SELF-CHECK before returning: (a) valid JSON, no fences; (b) every band is a multiple of 0.5 and reflects the anchors, not a 6.5–7.5 default; (c) every quote is a verbatim substring of the student's text; (d) no weakness or mistake was invented; (e) the word-count shortfall, if any, is reflected in TR; (f) "mistakes" is complete: re-read the text sentence by sentence one more time and add any error you skipped — if any of tr/cc/lr/gra is below 7 it is NOT empty, and the number of entries is consistent with the GRA and LR bands you gave; (g) "improvedVersion" fully satisfies the task and word minimum; (h) cross-criterion gaps are plausible per the sanity check above.`;
 
 module.exports = IELTS_WRITING_EXAMINER_PROMPT;
