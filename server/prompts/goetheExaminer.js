@@ -178,6 +178,42 @@ function exampleCriteriaJson(criteria, { analysis = true } = {}) {
 const PRAEDIKAT_BLOCK = `PRÄDIKATE (bezogen auf 100 Punkte):
 90–100 Sehr gut | 80–89 Gut | 70–79 Befriedigend | 60–69 Ausreichend (bestanden) | 0–59 Nicht bestanden`;
 
+// ─── Shared examiner rules (calibration, evidence, error log) ────────
+
+const CALIBRATION_BLOCK = `═══ KALIBRIERUNG ═══
+- Bewerte wie eine erfahrene, geschulte Goethe-Prüferin: zuerst, was die Leistung positiv auszeichnet, dann, wie stark Fehler die Verständlichkeit beeinträchtigen.
+- Band A ist selten und nur für Leistungen, die klar auf dem Zielniveau liegen. Band B = überwiegend angemessen mit einzelnen Abstrichen. Band C = knapp unter dem Zielniveau. Band D = deutlich darunter. Vergib NICHT automatisch Band B.
+- Jedes Kriterium wird unabhängig bewertet: Eine inhaltlich vollständige Leistung mit vielen Grammatikfehlern erhält bei "erfuellung" ein hohes, bei "strukturen" ein niedriges Band.
+- Unterscheide Fehler, die das Verständnis stören (falsche Konjunktion, falsches Verb, unklare Bezüge), von formalen Fehlern (Artikel, Endungen). Erstere wiegen schwerer.
+- Erfinde nichts: Jede Stärke, jede Schwäche und jeder Fehler muss mit einem WÖRTLICHEN Zitat aus der Leistung belegt sein.`;
+
+function errorLogBlock({ spoken = false } = {}) {
+  const source = spoken ? "das Transkript" : "den Text";
+  const written = spoken
+    ? ""
+    : "\n  7. Rechtschreibung und Zeichensetzung: Großschreibung der Nomen und der Anrede Sie/Ihnen, ss/ß, Umlaute, Komma vor Nebensätzen und vor Infinitivgruppen, jedes falsch geschriebene Wort.";
+  const spokenRule = spoken
+    ? "\n- Gesprochene Sprache: Füllwörter (äh, ähm), Selbstkorrekturen, Satzabbrüche und umgangssprachliche Verkürzungen („hab“, „nee“) sind KEINE Fehler. Das Transkript stammt aus automatischer Spracherkennung: Ein ähnlich klingendes Wort, das im Kontext keinen Sinn ergibt, ist wahrscheinlich ein Erkennungsfehler — nicht als Grammatik- oder Wortschatzfehler werten, höchstens als Aussprachehinweis."
+    : "";
+  return `═══ VOLLSTÄNDIGE FEHLERANALYSE ("mistakes") ═══
+"mistakes" ist ein VOLLSTÄNDIGES Fehlerprotokoll, keine Auswahl. Der Lernende korrigiert damit jeden einzelnen Fehler.
+METHODE: Gehe ${source} SATZ FÜR SATZ durch, vom ersten bis zum letzten. Prüfe in jedem Satz in dieser Reihenfolge:
+  1. Verb: Position (Verbzweitstellung im Hauptsatz, Verb am Ende im Nebensatz, Inversion nach vorangestelltem Satzglied), Konjugation, trennbare Verben, Perfekt mit haben/sein, Partizip II, Modalverb + Infinitiv am Satzende, Konjunktiv II, Passiv.
+  2. Nomen und Artikel: Genus (der/die/das), Kasus (Nominativ/Akkusativ/Dativ/Genitiv), Pluralform, n-Deklination, fehlender oder überflüssiger Artikel.
+  3. Adjektivendungen und Pronomen (Personal-, Possessiv-, Reflexiv-, Relativpronomen; Bezug klar?).
+  4. Präpositionen: richtige Präposition, richtiger Kasus (Wechselpräpositionen: Wo? Dativ / Wohin? Akkusativ), Verben und Adjektive mit fester Präposition (warten auf, sich interessieren für).
+  5. Satzbau und Verknüpfung: Konnektoren (weil/denn/deshalb/obwohl/trotzdem), dass/ob, Infinitiv mit zu, Negation (nicht/kein, Stellung von „nicht“), Reihenfolge der Angaben (temporal–kausal–modal–lokal).
+  6. Wortschatz: falsches Wort, falsche Kollokation („eine Entscheidung treffen“, nicht „machen“), wörtliche Übersetzung aus der Muttersprache, falsche Wortform, falsches Register (du/Sie gemischt, Umgangssprache im formellen Kontext).${written}
+REGELN:
+- Ein Eintrag pro Fehler. Enthält ein Satz drei Fehler, schreibe drei Einträge; zitiere jeweils nur die wenigen betroffenen Wörter (meist 2–8 Wörter).
+- Reihenfolge wie in der Leistung. Es gibt KEINE Obergrenze. Wiederholt sich derselbe Fehler mit denselben Wörtern, nenne ihn einmal und ergänze „(N-mal)“ in der Erklärung.
+- Die Erklärung nennt die Regel in EINEM kurzen, einfachen Satz, den ein Lernender auf Niveau A2 versteht (z. B. „Nach ‚weil‘ steht das Verb am Ende.“). "explanationEn" gibt dieselbe Regel kurz auf Englisch.
+- Erfinde keine Fehler. Korrektes, aber einfaches Deutsch ist kein Fehler; stilistische Vorlieben sind keine Fehler.${spokenRule}
+- Passe die Anzahl an die Bänder an: Band C oder schlechter bei "strukturen" oder "wortschatz" bedeutet, dass es viele Fehler gibt — das Protokoll muss sie zeigen.`;
+}
+
+const SELF_CHECK_BLOCK = `SELBSTKONTROLLE vor der Ausgabe: (a) gültiges JSON ohne Markdown; (b) jedes Band ist durch Zitate belegt und nicht pauschal B; (c) "scores" entsprechen exakt den Bändern; (d) jedes Zitat steht wörtlich in der Leistung; (e) "mistakes" ist vollständig — lies die Leistung noch einmal Satz für Satz und ergänze übersehene Fehler; (f) kein Fehler ist erfunden; (g) deine eigenen Korrekturen und die Musterlösung sind fehlerfreies Deutsch.`;
+
 // ─── WRITING ──────────────────────────────────────────────────────────
 
 function buildWritingExaminerPrompt(level, aufgabeNr) {
@@ -215,6 +251,10 @@ Bewerte immer das Niveau ${lvl}: Ein fehlerfreier, aber sehr einfacher Text unte
 
 ${PRAEDIKAT_BLOCK}
 
+${CALIBRATION_BLOCK}
+
+${errorLogBlock()}
+
 ═══ JSON-AUSGABEFORMAT (STRENG, KEIN MARKDOWN) ═══
 {
   "taskNumber": ${a.nr},
@@ -237,7 +277,8 @@ ${ex.detail}
       "category": "Grammatik|Wortschatz|Rechtschreibung|Register|Textaufbau",
       "original": "wörtliches Zitat aus dem Text",
       "correction": "korrigierte Fassung",
-      "explanation": "kurze Regel auf Deutsch"
+      "explanation": "kurze, einfache Regel auf Deutsch",
+      "explanationEn": "the same rule in one short English sentence"
     }
   ],
   "improvedVersion": "Vollständige Musterlösung auf authentischem ${lvl}-Niveau (${wordText} Wörter), alle Anforderungen erfüllt, fehlerfrei, im Ton des Kandidaten.",
@@ -246,7 +287,10 @@ ${ex.detail}
   ],
   "nextSteps": ["Konkreter Trainingstipp 1", "Konkreter Trainingstipp 2"]
 }
-Liste in "mistakes" die wichtigsten Fehler (maximal 12), jeweils mit wörtlichem Zitat.`;
+"criteriaAnalysis": Jede Stärke und jeder Verbesserungshinweis enthält ein wörtliches Zitat; "examinerComment" erklärt, warum dieses Band und nicht das nächsthöhere.
+"nextSteps": 3 konkrete, täglich übbare Aufgaben, die sich aus den häufigsten Fehlern ergeben (nicht „mehr Grammatik lernen“).
+
+${SELF_CHECK_BLOCK}`;
 }
 
 // ─── SPEAKING ─────────────────────────────────────────────────────────
@@ -287,6 +331,10 @@ Bewerte immer das Niveau ${lvl}; Leistungen unter dem Zielniveau erhalten bei Wo
 
 ${PRAEDIKAT_BLOCK}
 
+${CALIBRATION_BLOCK}
+
+${errorLogBlock({ spoken: true })}
+
 ═══ JSON-AUSGABEFORMAT (STRENG, KEIN MARKDOWN) ═══
 {
   "part": ${t.teil},
@@ -310,10 +358,10 @@ ${allCriteria.map((c) => `    "${c.key}": "Begründung der Bandvergabe zu ${c.la
   "strengths": ["Konkrete Stärke mit Beispiel"],
   "areasForImprovement": ["Konkreter Verbesserungshinweis"],
   "mistakes": [
-    { "spoken": "wörtliches Zitat des Kandidaten", "corrected": "korrigierte Fassung", "why": "kurze Regel" }
+    { "category": "Grammatik|Wortschatz|Satzbau|Register", "spoken": "wörtliches Zitat des Kandidaten", "corrected": "korrigierte Fassung", "why": "kurze, einfache Regel auf Deutsch", "explanationEn": "the same rule in one short English sentence" }
   ],
   "grammarAndVocabFeedback": [
-    { "candidateSpoke": "wörtliches Zitat", "correction": "bessere Formulierung auf ${lvl}-Niveau", "explanation": "Grund" }
+    { "candidateSpoke": "wörtliches Zitat (korrekt, aber zu einfach für ${lvl})", "correction": "stärkere Formulierung auf ${lvl}-Niveau", "explanation": "Warum das stärker wirkt" }
   ],${isPraesentation ? `
   "slideBreakdown": [
     { "slide": 1, "title": "Thema und Struktur", "covered": true, "comment": "…" }
@@ -321,7 +369,11 @@ ${allCriteria.map((c) => `    "${c.key}": "Begründung der Bandvergabe zu ${c.la
   "pronunciationTips": ["Konkreter Aussprachetipp"],
   "recommendedPhrases": ["Nützliches Redemittel für diesen Prüfungsteil"],
   "recommendedRedemittel": ["Nützlicher Satz für zukünftige Prüfungen"]
-}`;
+}
+"mistakes" enthält ALLE echten Fehler (siehe Fehleranalyse). "grammarAndVocabFeedback" enthält KEINE Fehler, sondern 2–4 korrekte, aber einfache Äußerungen mit einer stärkeren Formulierung auf ${lvl}-Niveau — kein Eintrag darf in beiden Listen stehen.
+"criteriaAnalysis": Jede Begründung nennt mindestens ein wörtliches Zitat und erklärt, warum dieses Band und nicht das nächsthöhere.
+
+${SELF_CHECK_BLOCK}`;
 }
 
 module.exports = {

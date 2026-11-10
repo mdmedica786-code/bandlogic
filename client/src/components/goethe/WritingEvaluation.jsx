@@ -148,12 +148,21 @@ export default function WritingEvaluation({ evaluation, essay }) {
         </p>
         {evaluation.mistakes?.length > 0 && (
           <ol className="mt-4 space-y-2 text-sm">
+            <li className="text-xs font-extrabold uppercase tracking-wider text-rose-700 list-none">
+              Alle Fehler ({evaluation.mistakes.length})
+            </li>
             {evaluation.mistakes.map((m, i) => (
               <li key={i} className="flex gap-2">
-                <span className="text-xs font-bold text-slate-400 w-5 pt-0.5">{i + 1}</span>
+                <span className="text-xs font-bold text-slate-400 w-5 pt-0.5 tabular-nums">{i + 1}</span>
                 <span>
+                  {m.category && (
+                    <span className="inline-block mr-1.5 px-1.5 py-0.5 rounded bg-slate-100 text-[10px] font-bold uppercase tracking-wide text-slate-600 align-middle">
+                      {m.category}
+                    </span>
+                  )}
                   <span className="line-through text-rose-700">{m.original}</span> → <span className="font-bold text-emerald-700">{m.correction}</span>
-                  {m.explanation && <span className="block text-xs text-slate-500">{m.explanation}</span>}
+                  {m.explanation && <span className="block text-xs text-slate-600">{m.explanation}</span>}
+                  {m.explanationEn && <span className="block text-xs text-slate-400 italic">{m.explanationEn}</span>}
                 </span>
               </li>
             ))}

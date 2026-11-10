@@ -186,6 +186,35 @@ export default function SpeakingReport({ level, sprechen, evaluations, histories
                   </ol>
                 </div>
               )}
+
+              {/* Complete error log — every mistake, also those not matched to one utterance above. */}
+              {ev.mistakes?.length > 0 && (
+                <div className="px-5 pb-5">
+                  <p className="text-xs font-extrabold uppercase tracking-wider text-rose-700 mb-2">
+                    Alle Fehler in diesem Teil ({ev.mistakes.length})
+                  </p>
+                  <ol className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+                    {ev.mistakes.map((m, i) => (
+                      <li key={`${m.spoken}-${i}`} className="flex gap-3 p-3 text-sm">
+                        <span className="flex-shrink-0 w-6 text-xs font-bold text-slate-400 pt-0.5 tabular-nums">{i + 1}</span>
+                        <span className="min-w-0">
+                          {m.category && (
+                            <span className="inline-block mb-1 px-1.5 py-0.5 rounded bg-slate-100 text-[10px] font-bold uppercase tracking-wide text-slate-600">
+                              {m.category}
+                            </span>
+                          )}
+                          <span className="block">
+                            <span className="line-through text-rose-700">{m.spoken}</span> →{' '}
+                            <span className="font-bold text-emerald-700">{m.corrected}</span>
+                          </span>
+                          {m.why && <span className="block text-xs text-slate-600 mt-0.5">{m.why}</span>}
+                          {m.explanationEn && <span className="block text-xs text-slate-400 italic">{m.explanationEn}</span>}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
             </section>
           );
         })}
