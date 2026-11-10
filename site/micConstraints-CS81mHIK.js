@@ -1,0 +1,1 @@
+import{I as e}from"./index-BS1lTgFf.js";var t=e(`square`,[[`rect`,{width:`18`,height:`18`,x:`3`,y:`3`,rx:`2`,key:`afitv7`}]]);function n({noiseSuppression:e=!0,echoCancellation:t=!0}={}){return{channelCount:1,echoCancellation:t,noiseSuppression:e,autoGainControl:!1,voiceIsolation:!0}}export{t as n,n as t};
