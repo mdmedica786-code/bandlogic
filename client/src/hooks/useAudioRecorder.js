@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { nearVoiceConstraints } from '../utils/micConstraints';
 
 /**
  * Custom hook for audio recording using Web Audio API + MediaRecorder.
@@ -73,12 +74,10 @@ export default function useAudioRecorder(customOptions = {}) {
       chunksRef.current = [];
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          sampleRate: 16000,
+        audio: nearVoiceConstraints({
           echoCancellation: customOptions.echoCancellation ?? true,
           noiseSuppression: customOptions.noiseSuppression ?? true,
-        },
+        }),
       });
       streamRef.current = stream;
 

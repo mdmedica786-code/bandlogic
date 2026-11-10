@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { nearVoiceConstraints } from '../../utils/micConstraints';
 
 function pickMimeType() {
   if (typeof MediaRecorder === 'undefined') return null;
@@ -42,7 +43,7 @@ export function useSpeechRecorder() {
     setError(null);
     setLiveCaption('');
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: nearVoiceConstraints() });
       streamRef.current = stream;
       const mimeType = pickMimeType();
       const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);

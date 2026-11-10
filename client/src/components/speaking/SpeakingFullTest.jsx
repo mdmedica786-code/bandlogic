@@ -5,6 +5,7 @@ import { evaluateSpeaking } from '../../api/client';
 import presetQuestions from '../../data/presetQuestions';
 import { Mic, Square, Loader2, Clock } from 'lucide-react';
 import TestShell from '../common/TestShell';
+import { nearVoiceConstraints } from '../../utils/micConstraints';
 import FullTestReport from '../evaluation/FullTestReport';
 
 // Full IELTS Speaking test: sequential Part 1–3 recording + combined rich report.
@@ -75,7 +76,7 @@ export default function SpeakingFullTest() {
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: nearVoiceConstraints() });
       const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
       const mr = new MediaRecorder(stream, { mimeType: mime });
       
