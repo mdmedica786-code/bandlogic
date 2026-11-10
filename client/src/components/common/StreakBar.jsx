@@ -9,7 +9,7 @@ export default function StreakBar() {
 
   useEffect(() => {
     if (!user) return;
-    api.get('/user/stats')
+    api.get('/stats')
       .then(res => {
         if (res.data?.success) setStats(res.data.data);
       })

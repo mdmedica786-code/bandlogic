@@ -47,11 +47,11 @@ router.post('/', verifyAuth, async (req, res, next) => {
     const analyticsDocRef = userRef.collection('analytics').doc('summary');
 
     await db.runTransaction(async (transaction) => {
-      // 1. Write the history record
-      transaction.set(historyDocRef, record);
-
-      // 2. Read existing analytics summary
+      // Firestore transactions require every read to happen before any write,
+      // so read the analytics summary first, then write both documents.
       const analyticsDoc = await transaction.get(analyticsDocRef);
+
+      transaction.set(historyDocRef, record);
       let analytics = analyticsDoc.exists ? analyticsDoc.data() : {
         totalEvals: 0,
         criteria: {},

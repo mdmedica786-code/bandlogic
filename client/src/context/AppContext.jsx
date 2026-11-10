@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, useMemo, u
 import useLocalStorage from '../hooks/useLocalStorage';
 import { generateId } from '../utils/formatters';
 import { addCardsFromEvaluation } from '../api/vocab';
+import { useAuth } from './AuthContext';
 
 const AppContext = createContext(null);
 
@@ -86,18 +87,28 @@ export function AppProvider({ children }) {
     }
   }, [students, activeStudentId, setActiveStudentId]);
 
-  // Fetch history from backend on load
+  // Fetch history from the backend once someone is signed in. AppProvider is
+  // mounted before sign-in (landing page), so fetching on mount alone sent the
+  // request without a token (401) and never retried after login.
+  const { user } = useAuth();
+  const uid = user?.uid;
   useEffect(() => {
+    if (!uid) return;
     let mounted = true;
     import('../api/client').then(({ fetchHistory }) => {
       fetchHistory().then(res => {
-        if (mounted && res.success && res.data) {
-          setHistory(res.data);
+        if (mounted && res.success && Array.isArray(res.data)) {
+          // Merge instead of replace so a result saved while this request was
+          // in flight is not dropped.
+          setHistory((prev) => {
+            const serverIds = new Set(res.data.map((r) => r.id));
+            return [...prev.filter((r) => !serverIds.has(r.id)), ...res.data];
+          });
         }
       }).catch(err => console.error("Failed to fetch history from backend:", err));
     });
     return () => { mounted = false; };
-  }, []);
+  }, [uid, setHistory]);
 
   // ─── Student roster actions ───
   const addStudent = useCallback((name) => {
