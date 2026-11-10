@@ -12,6 +12,7 @@ function bubblesFor(q, value) {
     case 'richtig_falsch':
     case 'ja_nein':
     case 'rfn':
+    case 'stimmt':
       return { bubbles: q.options.map((o) => SHORT[o] || o[0]), filled: value ? SHORT[value] || value[0] : null };
     case 'wer_sagt_was':
       return { bubbles: q.options.map((o) => o.split(/\s+/)[0].slice(0, 6)), filled: value ? value.split(/\s+/)[0].slice(0, 6) : null };

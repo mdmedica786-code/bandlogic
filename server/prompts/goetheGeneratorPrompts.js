@@ -61,28 +61,45 @@ function buildItemRules(part) {
   switch (qType) {
     case "richtig_falsch":
     case "ja_nein":
-    case "rfn": {
+    case "rfn":
+    case "stimmt": {
       const opts = ITEM_TYPES[qType].options;
+      const ternary = qType === "rfn" || qType === "stimmt";
       return `${header}
 - Jede Aufgabe ist eine Aussage ("prompt"). "options" ist IMMER exakt [${quote(opts)}].
-- "answer" ist genau einer dieser Werte. Verteile die Lösungen ausgewogen (jede Option mindestens ${qType === "rfn" ? 2 : Math.max(2, Math.floor(count / 3))}-mal).${
-        qType === "rfn" ? "\n- \"Nicht im Text\" nur, wenn die Information wirklich nicht im Text vorkommt (auch nicht implizit)." : ""
+- "answer" ist genau einer dieser Werte. Verteile die Lösungen ausgewogen (jede Option mindestens ${ternary ? 2 : Math.max(2, Math.floor(count / 3))}-mal).${
+        ternary ? `\n- "${opts[2]}" nur, wenn die Information wirklich nicht vorkommt (auch nicht implizit); das Thema der Aussage wird aber im Text berührt.` : ""
       }`;
     }
     case "mcq3":
     case "mcq4": {
       const letters = ITEM_TYPES[qType].letters;
+      if (part.textKind === "gap_options") {
+        return `${header}
+- Markiere jede Lücke im Fließtext mit ${GAP_MARKER} (also [[${from}]] bis [[${to}]]), in Textreihenfolge, jede Lücke genau einmal. Jede Lücke ersetzt EIN Wort oder eine kurze Wortgruppe.
+- Für jede Lücke: "prompt" = "Lücke <Nummer>", "options" = GENAU ${letters.length} Wörter/Wortgruppen OHNE Buchstaben-Präfix, "answer" = Buchstabe der richtigen Option (${quote(letters)}).
+- Die Distraktoren sind gleiche Wortart und auf den ersten Blick plausibel, scheitern aber an Grammatik (Rektion, Kasus, Satzbau) ODER Bedeutung/Kollokation im Kontext. Genau EINE Option passt.
+- Prüfe C1-Wortschatz: Konnektoren (dennoch, zumal, insofern), Präpositionen (angesichts, zugunsten), Nomen-Verb-Verbindungen (in Kauf nehmen), Adverbien. Verteile die Lösungsbuchstaben gemischt.`;
+      }
+      const sectionRule = part.itemsPerSegment
+        ? `\n- Zu JEDEM der ${part.segmentCount} Abschnitte gehören GENAU ${part.itemsPerSegment} aufeinanderfolgende Aufgaben; "segment" = Nummer des Abschnitts (1 bis ${part.segmentCount}), in Gesprächsreihenfolge.`
+        : "";
       return `${header}
 - "prompt" ist eine Frage oder ein Satzanfang. "options" enthält GENAU ${letters.length} Antworttexte OHNE Buchstaben-Präfix.
 - "answer" ist der Buchstabe der richtigen Option (${quote(letters)}). Verteile die Lösungsbuchstaben gemischt.
-- Die Distraktoren greifen Wörter aus dem Text auf, sind aber eindeutig falsch. Genau EINE Lösung ist richtig.`;
+- Die Distraktoren greifen Wörter aus dem Text auf, sind aber eindeutig falsch. Genau EINE Lösung ist richtig.${sectionRule}`;
     }
     case "zuordnung": {
       const labels = zuordnungLabels(part);
+      const noMatchCount = part.noMatchCount || 1;
       const noMatch = part.noMatchOption
-        ? `\n- Für GENAU EINE Aufgabe gibt es keine passende Lösung: dort ist "answer" = "${part.noMatchOption}".`
+        ? noMatchCount === 1
+          ? `\n- Für GENAU EINE Aufgabe gibt es keine passende Lösung: dort ist "answer" = "${part.noMatchOption}".`
+          : `\n- Für GENAU ${noMatchCount} Aufgaben gibt es keine passende Lösung (die Aussage passt thematisch, wird aber von niemandem geäußert): dort ist "answer" = "${part.noMatchOption}".`
         : "";
-      const bank = part.optionCount
+      const bank = part.optionBankSpec
+        ? `\n- ${part.optionBankSpec}`
+        : part.optionCount
         ? `\n- Lege zusätzlich "optionBank" an: GENAU ${part.optionCount} Einträge { "label": "a", "text": "…" } (a bis ${labels[labels.length - 1]}). Nur ${count} davon werden gebraucht, die übrigen sind plausible Distraktoren.`
         : "";
       return `${header}
@@ -148,6 +165,7 @@ function readingTextRules(part) {
         : `Erstelle GENAU ${part.textCount} Texte in "passage.texts". Label jedes Textes ist der Verfassername mit Ort (z. B. "Jana, Graz"). "passage.text" bleibt leer. Aufgabe ${part.from} bezieht sich auf den ersten Text, Aufgabe ${part.from + 1} auf den zweiten usw.`;
     case "gap_words":
     case "gap_sentences":
+    case "gap_options":
       return `Der vollständige Text steht in "passage.text" und enthält die Lückenmarkierungen [[${part.from}]] bis [[${part.to}]]. "passage.texts" bleibt leer.`;
     default:
       return `Der vollständige Text steht in "passage.text" (Absätze durch \\n\\n getrennt). "passage.texts" bleibt leer.`;
@@ -200,6 +218,9 @@ Deutsch in fehlerfreier Standardrechtschreibung (neue Rechtschreibung, korrekte 
 // ─── 2. LISTENING ─────────────────────────────────────────────────────
 
 function listeningScriptRules(part) {
+  if (part.scriptKind === "segments" && part.continuousSegments) {
+    return `Erstelle EIN zusammenhängendes Gespräch, aufgeteilt in GENAU ${part.segmentCount} aufeinanderfolgende Abschnitte in "segments" (label "Abschnitt 1" bis "Abschnitt ${part.segmentCount}"). Alle Abschnitte haben dieselben Sprecher; jeder Abschnitt behandelt einen Teilaspekt und endet an einer natürlichen Stelle. "context" bleibt leer.`;
+  }
   if (part.scriptKind === "segments") {
     return `Erstelle GENAU ${part.segmentCount} voneinander unabhängige Hörtexte in "segments" (label "Text 1" bis "Text ${part.segmentCount}"). Jeder Text hat ein kurzes "context" (z. B. "Anrufbeantworter").`;
   }

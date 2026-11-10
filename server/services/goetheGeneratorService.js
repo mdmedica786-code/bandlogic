@@ -101,6 +101,7 @@ function normalizeQuestions(part, rawQuestions, ctx = {}) {
       case "richtig_falsch":
       case "ja_nein":
       case "rfn":
+      case "stimmt":
         options = ITEM_TYPES[itemType].options;
         answer = matchOption(options, q.answer);
         break;
@@ -156,7 +157,7 @@ function normalizeQuestions(part, rawQuestions, ctx = {}) {
 
     let segment;
     if (part.qType === "paar_rf_mcq") segment = Math.floor(idx / 2) + 1;
-    else if (part.scriptKind === "segments") segment = idx + 1;
+    else if (part.scriptKind === "segments") segment = Math.floor(idx / (part.itemsPerSegment || 1)) + 1;
 
     return {
       id: `q${number}`,
@@ -216,7 +217,7 @@ function validateReading(parsed, part) {
     if (part.qType === "zuordnung") ctx.labels = zuordnungLabels(part);
   } else {
     if (!text.trim()) throw invalid(`Teil ${part.teil}: Lesetext fehlt`);
-    if (part.textKind === "gap_words" || part.textKind === "gap_sentences") text = normalizeGapText(text, part);
+    if (["gap_words", "gap_sentences", "gap_options"].includes(part.textKind)) text = normalizeGapText(text, part);
   }
 
   let wordBank;
@@ -707,7 +708,7 @@ async function interactGoetheSpeakingPartner({
 
   const parsed = await callWithRetry(async () => {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: process.env.GOETHE_PARTNER_MODEL || GENERATION_MODEL,
       temperature: 0.7,
       response_format: { type: "json_object" },
       messages,

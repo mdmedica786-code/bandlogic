@@ -124,6 +124,7 @@ export default function QuestionRenderer({
     case 'richtig_falsch':
     case 'ja_nein':
     case 'rfn':
+    case 'stimmt':
     case 'wer_sagt_was':
       body = <ChoiceChips options={question.options} value={value} onChange={onChange} disabled={disabled} showEn={isLearn} />;
       break;

@@ -4,7 +4,7 @@ import { HighlightableText } from './shared/TextHighlighter';
 /** Picks an authentic layout for the Lesetext from the Teil's format. */
 function documentStyle(part) {
   const t = (part.title || '').toLowerCase();
-  if (part.textKind === 'gap_words' || part.textKind === 'gap_sentences') return 'gap';
+  if (['gap_words', 'gap_sentences', 'gap_options'].includes(part.textKind)) return 'gap';
   if (part.textKind === 'multi') {
     if (part.qType === 'zuordnung' && /anzeige/.test(t)) return 'ads';
     if (/kommentar|meinung/.test(t)) return 'comments';
