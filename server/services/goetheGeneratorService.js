@@ -31,7 +31,7 @@ const { callWithRetry, parseJsonContent, LlmValidationError } = require("../util
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const GENERATION_MODEL = "gpt-4o-mini";
-const TTS_MODEL = process.env.GOETHE_TTS_MODEL || "tts-1-hd";
+const { synthesizeGerman } = require("./germanTts");
 
 function normalizeAnswer(s) {
   return (s ?? "")
@@ -515,14 +515,8 @@ async function synthesizeListeningAudio({ level, part, speakers, segments }) {
   try {
     const speed = TTS_SPEED[level] || 1.0;
     const clips = await mapLimit(plan, TTS_CONCURRENCY, async (item) => {
-      const res = await openai.audio.speech.create({
-        model: TTS_MODEL,
-        voice: item.voice,
-        input: item.text.slice(0, 4000),
-        response_format: "mp3",
-        speed,
-      });
-      return { buffer: Buffer.from(await res.arrayBuffer()), pauseAfter: item.pauseAfter };
+      const buffer = await synthesizeGerman({ text: item.text, voice: item.voice, speed, level });
+      return { buffer, pauseAfter: item.pauseAfter };
     });
 
     let merged;
@@ -728,13 +722,8 @@ async function interactGoetheSpeakingPartner({
   // 3. Synthesize Spoken German Audio via OpenAI TTS for the Partner
   let audioBase64 = null;
   try {
-    const ttsResponse = await openai.audio.speech.create({
-      model: TTS_MODEL,
-      voice: ["alloy", "nova", "echo", "onyx", "shimmer", "fable"].includes(voice) ? voice : "nova",
-      input: replyText,
-      response_format: "mp3",
-    });
-    audioBase64 = Buffer.from(await ttsResponse.arrayBuffer()).toString("base64");
+    const speech = await synthesizeGerman({ text: replyText, voice: ["alloy", "nova", "echo", "onyx", "shimmer", "fable"].includes(voice) ? voice : "nova", level });
+    audioBase64 = speech.toString("base64");
   } catch (ttsErr) {
     console.warn("OpenAI TTS synthesis error (client will fallback to browser speech synthesis):", ttsErr.message);
   }
@@ -940,14 +929,8 @@ Antworte jetzt als PRÜFERIN und/oder PARTNER. Gib NUR valides JSON zurück.`;
       const isExaminer = t.role === "pruefer";
       let audioBase64 = null;
       try {
-        const res = await openai.audio.speech.create({
-          model: TTS_MODEL,
-          voice: isExaminer ? EXAMINER_VOICE : PARTNERS[partner].voice,
-          input: t.text.slice(0, 4000),
-          response_format: "mp3",
-          speed: TTS_SPEED[lvl] || 1.0,
-        });
-        audioBase64 = Buffer.from(await res.arrayBuffer()).toString("base64");
+        const speech = await synthesizeGerman({ text: t.text, voice: isExaminer ? EXAMINER_VOICE : PARTNERS[partner].voice, speed: TTS_SPEED[lvl] || 1.0, level: lvl });
+        audioBase64 = speech.toString("base64");
       } catch (ttsErr) {
         console.warn("Goethe exam TTS failed (client falls back to browser speech):", ttsErr.message);
       }
